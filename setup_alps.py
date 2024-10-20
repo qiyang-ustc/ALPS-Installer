@@ -12,6 +12,9 @@ from colorama import Fore, Style, init
 init() # init colorama
 
 install_path = "./ALPSLib"
+boost_version = "1.81.0"
+PYTHON_LIBRARY = "/opt/local/Library/Frameworks/Python.framework/Versions/3.10/lib/libpython3.10.dylib"
+PYTHON_INTERPRETER = "/opt/local/bin/python3.10"
 
 class ALPSInstall(install):
     def run(self):
@@ -37,7 +40,6 @@ class ALPSInstall(install):
     def download_boost(self):
         print(Fore.BLUE +"Downloading and unpacking Boost...")
 
-        boost_version = "1.81.0"
         boost_filename = f"boost_{boost_version.replace('.', '_')}.tar.gz"
         boost_url = f"https://archives.boost.io/release/{boost_version}/source/{boost_filename}"
 
@@ -102,7 +104,9 @@ class ALPSInstall(install):
             f"-DBoost_ROOT_DIR={self.boost_dir}",
             "-DCMAKE_CXX_STANDARD=11",
             "-DCMAKE_CXX_FLAGS=-std=c++11 -stdlib=libc++ -DBOOST_NO_AUTO_PTR -DBOOST_FILESYSTEM_NO_CXX20_ATOMIC_REF",
-            f"-DCMAKE_LIBRARY_PATH={self.boost_dir}"+f"/stage/lib:{LD_LIBRARY_PATH}"
+            f"-DCMAKE_LIBRARY_PATH={self.boost_dir}"+f"/stage/lib:{LD_LIBRARY_PATH}",
+            f"-DPYTHON_INTERPRETER={PYTHON_INTERPRETER}",
+            f"-DPYTHON_LIBRARY={PYTHON_LIBRARY}"
                 ]
         subprocess.check_call(cmake_args)
 
@@ -149,7 +153,6 @@ class ALPSInstall(install):
 
             # 打印当前的 SDKROOT 值以确认
             print(f"Current SDKROOT: {os.environ.get('SDKROOT', 'Not set')}")
-
 
 setup(
     name="alps",
