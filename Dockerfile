@@ -1,13 +1,16 @@
 # Use Ubuntu 14.04 with GCC 5 as the base image
 FROM holbertonschool/ubuntu-1404-gcc5
 
+ARG VERSION=latest
+
 # Set environment variables
 ENV LC_ALL=C
 ENV CXX=/usr/bin/g++
 ENV ALPS_DIR=/project/alps/share/alps/
 ENV BOOST_PATH=/project/boost_1_63_0
 ENV PROJECT_DIR=/project
-ENV PARALLEL_BUILD=8
+ENV PATH="/project/alps/bin:${PATH}"
+ENV PARALLEL_BUILD=12
 
 # Switch to root to install dependencies
 USER root
@@ -34,14 +37,17 @@ RUN apt-get update -y && \
     -DBoost_ROOT_DIR:PATH=/project/boost_1_63_0 \
     -DHDF5_LIBRARIES=/usr/lib/x86_64-linux-gnu/libhdf5.so \
     /project/alps-2.3.0-src/alps && \
-    make -j$PARALLEL_BUILD && make install -j$PARALLEL_BUILD
+    make -j$PARALLEL_BUILD && make install -j$PARALLEL_BUILD && \
+    rm -rf /project/alps-2.3.0-src
 
 # Set labels
 LABEL maintainer="QiYang" \
       os_version="ubuntu-14" \
       gcc_version="5.x" \
       alps_version="2.3.0" \
-      boost_version="1.63.0"
+      boost_version="1.63.0" \
+      VERSION=${VERSION}
 
+WORKDIR /project
 # Set the default command
 CMD ["/bin/bash"]
